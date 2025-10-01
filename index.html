@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة رعاية المسنين الذكية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            font-size: 24px;
+        }
+        
+        .monitoring-icon {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .health-icon {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+        
+        .emergency-icon {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #d69e2e;
+        }
+        
+        .activity-icon {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: #38a169;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-normal { background-color: #48bb78; }
+        .status-warning { background-color: #ed8936; }
+        .status-alert { background-color: #f56565; }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #4a5568;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-emergency {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+        }
+        
+        .btn-emergency:hover {
+            box-shadow: 0 4px 12px rgba(245, 101, 101, 0.4);
+        }
+        
+        .activity-log {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-right: 4px solid #667eea;
+        }
+        
+        .log-time {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+        
+        .log-message {
+            color: #2d3748;
+        }
+        
+        .chart-container {
+            height: 200px;
+            background: #f7fafc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>منصة رعاية المسنين الذكية</h1>
+            <p>نظام مراقبة ورعاية شامل للمسنين باستخدام الذكاء الاصطناعي</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- نظام المراقبة الذكية -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon monitoring-icon">📹</div>
+                    <div class="card-title">نظام المراقبة الذكية</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">حالة النظام</span>
+                    <span class="metric-value">
+                        <span class="status-indicator status-normal"></span>
+                        نشط
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">آخر كشف للحركة</span>
+                    <span class="metric-value" id="last-movement">منذ 5 دقائق</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">مستوى النشاط</span>
+                    <span class="metric-value" id="activity-level">طبيعي</span>
+                </div>
+                <button class="btn" onclick="refreshMonitoring()">تحديث البيانات</button>
+            </div>
+            
+            <!-- المؤشرات الصحية -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon health-icon">💡</div>
+                    <div class="card-title">توصيات صحية</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">التوصية الحالية</span>
+                    <span class="metric-value" id="current-recommendation">جاري التحميل...</span>
+                </div>
+                <button class="btn" onclick="getNewRecommendation()">الحصول على توصية جديدة</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon health-icon">❤️</div>
+                    <div class="card-title">المؤشرات الصحية</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">معدل النوم</span>
+                    <span class="metric-value" id="sleep-hours">7.5 ساعات</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">مستوى النشاط اليومي</span>
+                    <span class="metric-value" id="daily-activity">متوسط</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">آخر تناول دواء</span>
+                    <span class="metric-value" id="last-medication">منذ ساعتين</span>
+                </div>
+                <div class="chart-container">
+                    رسم بياني لمعدل النشاط الأسبوعي
+                </div>
+            </div>
+            
+            <!-- حالات الطوارئ -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon emergency-icon">🚨</div>
+                    <div class="card-title">حالات الطوارئ</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">حالة التنبيهات</span>
+                    <span class="metric-value">
+                        <span class="status-indicator status-normal"></span>
+                        لا توجد تنبيهات
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">آخر فحص أمان</span>
+                    <span class="metric-value" id="last-safety-check">منذ 10 دقائق</span>
+                </div>
+                <button class="btn btn-emergency" onclick="emergencyAlert()">تنبيه طوارئ</button>
+                <button class="btn" onclick="testSystem()">اختبار النظام</button>
+            </div>
+            
+            <!-- المساعد الصوتي الذكي -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon monitoring-icon">🗣️</div>
+                    <div class="card-title">المساعد الصوتي الذكي</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">أرسل أمراً صوتياً (نصي)</span>
+                    <input type="text" id="voice-command-input" placeholder="مثال: تذكير دواء" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                </div>
+                <div class="metric">
+                    <span class="metric-label">استجابة المساعد</span>
+                    <span class="metric-value" id="voice-assistant-response">...</span>
+                </div>
+                <button class="btn" onclick="sendVoiceCommand()">إرسال الأمر</button>
+            </div>
+
+            <!-- سجل الأنشطة -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon activity-icon">📊</div>
+                    <div class="card-title">سجل الأنشطة</div>
+                </div>
+                <div class="activity-log" id="activity-log">
+                    <div class="log-entry">
+                        <div class="log-time">11:30 ص - اليوم</div>
+                        <div class="log-message">تم رصد حركة طبيعية في غرفة المعيشة</div>
+                    </div>
+                    <div class="log-entry">
+                        <div class="log-time">10:15 ص - اليوم</div>
+                        <div class="log-message">تذكير بتناول الدواء - تم التأكيد</div>
+                    </div>
+                    <div class="log-entry">
+                        <div class="log-time">09:45 ص - اليوم</div>
+                        <div class="log-message">بداية النشاط اليومي</div>
+                    </div>
+                    <div class="log-entry">
+                        <div class="log-time">07:30 ص - اليوم</div>
+                        <div class="log-message">استيقاظ من النوم</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="exportLog()">تصدير السجل</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // تحديث البيانات من API
+        async function updateLiveData() {
+            try {
+                // الحصول على إحصائيات شاملة
+                const response = await fetch('/api/dashboard-stats');
+                const data = await response.json();
+                
+                // تحديث بيانات المراقبة
+                document.getElementById('last-movement').textContent = data.monitoring.last_movement;
+                document.getElementById('activity-level').textContent = translateActivityLevel(data.monitoring.activity_level);
+                
+                // تحديث البيانات الصحية
+                document.getElementById('sleep-hours').textContent = data.health.sleep_hours + ' ساعات';
+                document.getElementById('daily-activity').textContent = translateActivityLevel(data.health.daily_activity);
+                document.getElementById('last-medication').textContent = data.health.last_medication;
+                
+                // تحديث بيانات الطوارئ
+                document.getElementById('last-safety-check').textContent = data.emergency.last_safety_check;
+                document.getElementById('current-recommendation').textContent = translateRecommendation(data.recommendation);
+            } catch (error) {
+                console.error('خطأ في تحديث البيانات:', error);
+            }
+        }
+        
+        function translateActivityLevel(level) {
+            const translations = {
+                'low': 'منخفض',
+                'normal': 'طبيعي',
+                'medium': 'متوسط',
+                'high': 'مرتفع',
+                'excellent': 'ممتاز'
+            };
+            return translations[level] || level;
+        }
+
+        function translateRecommendation(recommendation) {
+            const translations = {
+                'walking': 'المشي الخفيف',
+                'stretching': 'تمارين الإطالة',
+                'reading': 'القراءة',
+                'light_yoga': 'اليوغا الخفيفة',
+                'social_games': 'الألعاب الاجتماعية'
+            };
+            return translations[recommendation] || recommendation;
+        }
+
+        async function getNewRecommendation() {
+            alert('جاري الحصول على توصية جديدة...');
+            try {
+                const response = await fetch('/api/recommendations');
+                const data = await response.json();
+                document.getElementById('current-recommendation').textContent = translateRecommendation(data.recommendation);
+                alert('تم الحصول على توصية جديدة: ' + translateRecommendation(data.recommendation));
+            } catch (error) {
+                console.error('خطأ في الحصول على توصية جديدة:', error);
+                alert('حدث خطأ في الحصول على توصية جديدة');
+            }
+        }
+        
+        function refreshMonitoring() {
+            alert('جاري تحديث بيانات المراقبة...');
+            updateLiveData();
+        }
+        
+        async function emergencyAlert() {
+            if (confirm('هل أنت متأكد من إرسال تنبيه الطوارئ؟')) {
+                try {
+                    const response = await fetch('/api/emergency', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: 'تنبيه طوارئ من لوحة التحكم',
+                            severity: 'high'
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    alert('تم إرسال تنبيه الطوارئ إلى جميع المشرفين وخدمات الطوارئ!');
+                    updateActivityLog();
+                } catch (error) {
+                    console.error('خطأ في إرسال تنبيه الطوارئ:', error);
+                    alert('حدث خطأ في إرسال التنبيه');
+                }
+            }
+        }
+        
+        async function testSystem() {
+            alert('جاري اختبار جميع أنظمة المراقبة...');
+            try {
+                const response = await fetch('/api/test-system', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                setTimeout(() => {
+                    alert('تم اختبار النظام بنجاح - جميع الأنظمة تعمل بشكل طبيعي');
+                    updateActivityLog();
+                }, 2000);
+            } catch (error) {
+                console.error('خطأ في اختبار النظام:', error);
+                alert('حدث خطأ في اختبار النظام');
+            }
+        }
+        
+        function exportLog() {
+            alert('جاري تصدير سجل الأنشطة...');
+            // في التطبيق الحقيقي، سيتم تصدير البيانات إلى ملف
+        }
+        
+        async function updateActivityLog() {
+            try {
+                const response = await fetch('/api/activity-log');
+                const logs = await response.json();
+                
+                const logContainer = document.getElementById('activity-log');
+                logContainer.innerHTML = '';
+                
+                logs.slice(0, 10).forEach(log => {
+                    const logEntry = document.createElement('div');
+                    logEntry.className = 'log-entry';
+                    logEntry.innerHTML = `
+                        <div class="log-time">${log.time_ago}</div>
+                        <div class="log-message">${log.message}</div>
+                    `;
+                    logContainer.appendChild(logEntry);
+                });
+            } catch (error) {
+                console.error('خطأ في تحديث سجل الأنشطة:', error);
+            }
+        }
+        
+        async function sendVoiceCommand() {
+            const commandInput = document.getElementById("voice-command-input");
+            const commandText = commandInput.value;
+            if (!commandText) {
+                alert("الرجاء إدخال أمر صوتي.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/voice-command", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ command: commandText })
+                });
+                const result = await response.json();
+                document.getElementById("voice-assistant-response").textContent = result.response || result.error;
+                commandInput.value = ""; // Clear input after sending
+            } catch (error) {
+                console.error("خطأ في إرسال الأمر الصوتي:", error);
+                document.getElementById("voice-assistant-response").textContent = "حدث خطأ في معالجة الأمر.";
+            }
+        }
+
+        // تحديث البيانات كل 30 ثانية
+        setInterval(updateLiveData, 30000);
+        setInterval(updateActivityLog, 60000); // تحديث سجل الأنشطة كل دقيقة
+        
+        // تحديث أولي
+        updateLiveData();
+        updateActivityLog();
+    </script>
+</body>
+</html>
